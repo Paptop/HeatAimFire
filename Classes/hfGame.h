@@ -29,10 +29,16 @@
 
 namespace Haf
 {
+	class CMap;
+
 	class Game : public cocos2d::Scene
 	{
 	public:
+		Game();
+		~Game();
+
 		static cocos2d::Scene* createScene();
+
 
 		virtual bool init();
 		virtual void update(float fDelta);
@@ -42,6 +48,9 @@ namespace Haf
 
 		// implement the "static create()" method manually
 		CREATE_FUNC(Game);
+
+	private:
+		CMap*	_worldMap;
 	};
 }
 

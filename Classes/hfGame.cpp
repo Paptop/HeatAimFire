@@ -25,13 +25,25 @@
 #include "hfGame.h"
 #include "SimpleAudioEngine.h"
 
-USING_NS_CC;
+#include "Core/Environment/hfMap.h"
+#include "Utils/hfGlobalUtils.h"
+#include "Utils/hfDebugUtils.h"
 
-cocos2d::Sprite* l_sprite;
+USING_NS_CC;
 
 Scene* Haf::Game::createScene()
 {
     return Haf::Game::create();
+}
+
+Haf::Game::Game()
+: _worldMap(nullptr)
+{
+}
+
+Haf::Game::~Game()
+{
+	CGlobalUtils::Deinit();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -51,79 +63,44 @@ bool Haf::Game::init()
         return false;
     }
 
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
-
-    // add a "close" icon to exit the progress. it's an autorelease object
-	auto closeItem = MenuItemImage::create(
-										"CloseNormal.png",
-										"CloseSelected.png",
-										 CC_CALLBACK_1(Haf::Game::menuCloseCallback, this));
-
-    if (closeItem == nullptr ||
-        closeItem->getContentSize().width <= 0 ||
-        closeItem->getContentSize().height <= 0)
-    {
-        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-    }
-    else
-    {
-        float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
-        float y = origin.y + closeItem->getContentSize().height/2;
-        closeItem->setPosition(Vec2(x,y));
-    }
-
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
-
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-    if (label == nullptr)
-    {
-        problemLoading("'fonts/Marker Felt.ttf'");
-    }
-    else
-    {
-        // position the label on the center of the screen
-        label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                                origin.y + visibleSize.height - label->getContentSize().height));
-
-        // add the label as a child to this layer
-        this->addChild(label, 1);
-    }
-
-    // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
-    if (sprite == nullptr)
-    {
-        problemLoading("'HelloWorld.png'");
-    }
-    else
-    {
-        // position the sprite on the center of the screen
-        sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-		l_sprite = sprite;
-		//sprite->setRotation(3.14259 * 0.5f);
-
-		//sprite->setRotation(90.0f);
-		
-
-        // add the sprite as a child to this layer
-        this->addChild(sprite, 0);
-    }
-
+	CGlobalUtils::Init();
+	_worldMap = new CMap();
+	std::string mapData = FileUtils::getInstance()->getStringFromFile("Test.txt");
+	_worldMap->CreateMap(mapData, this);
 	scheduleUpdate();
+
+	auto eventListener = EventListenerKeyboard::create();
+
+
+	eventListener->onKeyPressed = [](EventKeyboard::KeyCode keyCode, Event* event) {
+
+		int speed = 10;
+		Vec2 loc = event->getCurrentTarget()->getPosition();
+		switch (keyCode) {
+		case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+		case EventKeyboard::KeyCode::KEY_A:
+			event->getCurrentTarget()->setPosition(loc.x - speed, loc.y);
+			break;
+		case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+		case EventKeyboard::KeyCode::KEY_D:
+			event->getCurrentTarget()->setPosition(loc.x + speed, loc.y);
+			break;
+		case EventKeyboard::KeyCode::KEY_UP_ARROW:
+		case EventKeyboard::KeyCode::KEY_W:
+			event->getCurrentTarget()->setPosition(loc.x, loc.y + speed);
+			break;
+		case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
+		case EventKeyboard::KeyCode::KEY_S:
+			event->getCurrentTarget()->setPosition(loc.x, loc.y - speed);
+			break;
+		}
+	};
+
+	//auto size = Director::getInstance()->getWinSize();
+	//float zeye = Director::getInstance()->getZEye();
+	//this->getDefaultCamera()->initPerspective(45.0f, (GLfloat)size.width / size.height, 0, zeye + size.height / 2.0f);
+
+	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this->getDefaultCamera());
 
     return true;
 }
@@ -145,8 +122,4 @@ void Haf::Game::menuCloseCallback(Ref* pSender)
 void Haf::Game::update(float fDelta)
 {
 	cocos2d::Scene::update(fDelta);
-	static float fProgress = 0.0f;
-
-	fProgress += fDelta;
-	l_sprite->setRotation3D(cocos2d::Vec3(0.0f, sin(fProgress) * 90.0f, 0.0f));
 }
