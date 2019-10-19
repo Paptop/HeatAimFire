@@ -30,6 +30,7 @@
 namespace Haf
 {
 	class CMap;
+	class CKeyboardController;
 
 	class Game : public cocos2d::Scene
 	{
@@ -50,7 +51,8 @@ namespace Haf
 		CREATE_FUNC(Game);
 
 	private:
-		CMap*	_worldMap;
+		CMap*					_worldMap;
+		CKeyboardController*	_keyController;
 	};
 }
 

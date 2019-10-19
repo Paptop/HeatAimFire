@@ -26,6 +26,7 @@
 #include "SimpleAudioEngine.h"
 
 #include "Core/Environment/hfMap.h"
+#include "Controllers/hfKeyboardController.h"
 #include "Utils/hfGlobalUtils.h"
 #include "Utils/hfDebugUtils.h"
 
@@ -44,13 +45,8 @@ Haf::Game::Game()
 Haf::Game::~Game()
 {
 	CGlobalUtils::Deinit();
-}
-
-// Print useful error message instead of segfaulting when files are not there.
-static void problemLoading(const char* filename)
-{
-    printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+	delete _worldMap;
+	delete _keyController;
 }
 
 // on "init" you need to initialize your instance
@@ -64,43 +60,17 @@ bool Haf::Game::init()
     }
 
 	CGlobalUtils::Init();
+
+	_keyController = new CKeyboardController();
+	_keyController->Init(_eventDispatcher, this);
+
 	_worldMap = new CMap();
 	std::string mapData = FileUtils::getInstance()->getStringFromFile("Test.txt");
 	_worldMap->CreateMap(mapData, this);
 	scheduleUpdate();
 
 	auto eventListener = EventListenerKeyboard::create();
-
-
-	eventListener->onKeyPressed = [](EventKeyboard::KeyCode keyCode, Event* event) {
-
-		int speed = 10;
-		Vec2 loc = event->getCurrentTarget()->getPosition();
-		switch (keyCode) {
-		case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
-		case EventKeyboard::KeyCode::KEY_A:
-			event->getCurrentTarget()->setPosition(loc.x - speed, loc.y);
-			break;
-		case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
-		case EventKeyboard::KeyCode::KEY_D:
-			event->getCurrentTarget()->setPosition(loc.x + speed, loc.y);
-			break;
-		case EventKeyboard::KeyCode::KEY_UP_ARROW:
-		case EventKeyboard::KeyCode::KEY_W:
-			event->getCurrentTarget()->setPosition(loc.x, loc.y + speed);
-			break;
-		case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
-		case EventKeyboard::KeyCode::KEY_S:
-			event->getCurrentTarget()->setPosition(loc.x, loc.y - speed);
-			break;
-		}
-	};
-
-	//auto size = Director::getInstance()->getWinSize();
-	//float zeye = Director::getInstance()->getZEye();
-	//this->getDefaultCamera()->initPerspective(45.0f, (GLfloat)size.width / size.height, 0, zeye + size.height / 2.0f);
-
-	this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this->getDefaultCamera());
+	//this->_eventDispatcher->addEventListenerWithSceneGraphPriority(eventListener, this->getDefaultCamera());
 
     return true;
 }
@@ -115,11 +85,29 @@ void Haf::Game::menuCloseCallback(Ref* pSender)
 
     //EventCustom customEndEvent("game_scene_close_event");
     //_eventDispatcher->dispatchEvent(&customEndEvent);
-
-
 }
 
 void Haf::Game::update(float fDelta)
 {
 	cocos2d::Scene::update(fDelta);
+
+	//TODO: move this block of code
+	const int Speed = 10;
+	cocos2d::Vec2 loc = getDefaultCamera()->getPosition();
+	if (_keyController->IsKeyPressed(cocos2d::EventKeyboard::KeyCode::KEY_W))
+	{
+		getDefaultCamera()->setPosition(loc.x, loc.y + Speed);
+	}
+	else if (_keyController->IsKeyPressed(cocos2d::EventKeyboard::KeyCode::KEY_A))
+	{
+		getDefaultCamera()->setPosition(loc.x - Speed, loc.y);
+	}
+	else if (_keyController->IsKeyPressed(cocos2d::EventKeyboard::KeyCode::KEY_S))
+	{
+		getDefaultCamera()->setPosition(loc.x, loc.y - Speed);
+	}
+	else if (_keyController->IsKeyPressed(cocos2d::EventKeyboard::KeyCode::KEY_D))
+	{
+		getDefaultCamera()->setPosition(loc.x + Speed, loc.y);
+	}
 }
