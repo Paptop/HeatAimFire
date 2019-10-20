@@ -26,9 +26,13 @@
 #include "SimpleAudioEngine.h"
 
 #include "Core/Environment/hfMap.h"
-#include "Controllers/hfKeyboardController.h"
-#include "Utils/hfGlobalUtils.h"
+#include "Core/tkEntity.h"
+#include "Core/tkEntityController.h"
+
 #include "Utils/hfDebugUtils.h"
+#include "Utils/hfGlobalUtils.h"
+#include "Utils/hfTileFactory.h"
+
 
 USING_NS_CC;
 
@@ -46,7 +50,6 @@ Haf::Game::~Game()
 {
 	CGlobalUtils::Deinit();
 	delete _worldMap;
-	delete _keyController;
 }
 
 // on "init" you need to initialize your instance
@@ -61,12 +64,16 @@ bool Haf::Game::init()
 
 	CGlobalUtils::Init();
 
-	_keyController = new CKeyboardController();
-	_keyController->Init(_eventDispatcher, this);
+	_pcPlayer = new CEntity();
+	_pcPlayer->SetPos(STilePos(0, 0));
+	_pcPlayer->SetSprite(CTileFactory::LoadAsset("Player.png"));
 
 	_worldMap = new CMap();
 	std::string mapData = FileUtils::getInstance()->getStringFromFile("Test.txt");
 	_worldMap->CreateMap(mapData, this);
+
+	_pcPlayerController = new CEntityController(_pcPlayer, _worldMap, this);
+
 	scheduleUpdate();
 
 	auto eventListener = EventListenerKeyboard::create();
@@ -90,24 +97,5 @@ void Haf::Game::menuCloseCallback(Ref* pSender)
 void Haf::Game::update(float fDelta)
 {
 	cocos2d::Scene::update(fDelta);
-
-	//TODO: move this block of code
-	const int Speed = 10;
-	cocos2d::Vec2 loc = getDefaultCamera()->getPosition();
-	if (_keyController->IsKeyPressed(cocos2d::EventKeyboard::KeyCode::KEY_W))
-	{
-		getDefaultCamera()->setPosition(loc.x, loc.y + Speed);
-	}
-	else if (_keyController->IsKeyPressed(cocos2d::EventKeyboard::KeyCode::KEY_A))
-	{
-		getDefaultCamera()->setPosition(loc.x - Speed, loc.y);
-	}
-	else if (_keyController->IsKeyPressed(cocos2d::EventKeyboard::KeyCode::KEY_S))
-	{
-		getDefaultCamera()->setPosition(loc.x, loc.y - Speed);
-	}
-	else if (_keyController->IsKeyPressed(cocos2d::EventKeyboard::KeyCode::KEY_D))
-	{
-		getDefaultCamera()->setPosition(loc.x + Speed, loc.y);
-	}
+	_pcPlayerController->CheckInput(fDelta);
 }

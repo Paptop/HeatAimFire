@@ -151,9 +151,11 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
-    <ClCompile Include="..\Classes\Controllers\KeyBoardController.cpp" />
+    <ClCompile Include="..\Classes\Controllers\hfKeyBoardController.cpp" />
     <ClCompile Include="..\Classes\Core\Environment\hfMap.cpp" />
     <ClCompile Include="..\Classes\Core\Environment\hfTile.cpp" />
+    <ClCompile Include="..\Classes\Core\tkEntity.cpp" />
+    <ClCompile Include="..\Classes\Core\tkEntityController.cpp" />
     <ClCompile Include="..\Classes\hfGame.cpp" />
     <ClCompile Include="..\Classes\Utils\hfDebugUtils.cpp" />
     <ClCompile Include="..\Classes\Utils\hfGlobalUtils.cpp" />
@@ -166,6 +168,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Core\Environment\hfMap.h" />
     <ClInclude Include="..\Classes\Core\Environment\hfTile.h" />
     <ClInclude Include="..\Classes\Core\Environment\hfTilePos.h" />
+    <ClInclude Include="..\Classes\Core\tkEntity.h" />
+    <ClInclude Include="..\Classes\Core\tkEntityController.h" />
     <ClInclude Include="..\Classes\hfGame.h" />
     <ClInclude Include="..\Classes\Utils\hfDebugUtils.h" />
     <ClInclude Include="..\Classes\Utils\hfGlobalUtils.h" />

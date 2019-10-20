@@ -13,6 +13,8 @@ Haf::CMap::CMap()
 
 void Haf::CMap::CreateMap(std::string strData, cocos2d::Scene* scene)
 {
+	scene->addChild(this);
+
 	std::vector<CTile*> rowTiles;
 
 	int row = 0;
@@ -40,7 +42,7 @@ void Haf::CMap::CreateMap(std::string strData, cocos2d::Scene* scene)
 
 		cocos2d::Sprite* sprite = newTile->GetSprite();
 		sprite->setPosition(col * sprite->getBoundingBox().size.width, row * sprite->getBoundingBox().size.height);
-		scene->addChild(sprite);
+		this->addChild(sprite);
 		rowTiles.push_back(newTile);
 	}
 }

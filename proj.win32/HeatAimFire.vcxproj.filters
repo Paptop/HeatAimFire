@@ -36,7 +36,13 @@
     <ClCompile Include="..\Classes\Utils\hfDebugUtils.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Controllers\KeyBoardController.cpp">
+    <ClCompile Include="..\Classes\Core\tkEntity.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Core\tkEntityController.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controllers\hfKeyBoardController.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -69,6 +75,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Controllers\hfKeyboardController.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Core\tkEntity.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Core\tkEntityController.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

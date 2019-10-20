@@ -30,7 +30,8 @@
 namespace Haf
 {
 	class CMap;
-	class CKeyboardController;
+	class CEntity;
+	class CEntityController;
 
 	class Game : public cocos2d::Scene
 	{
@@ -52,7 +53,8 @@ namespace Haf
 
 	private:
 		CMap*					_worldMap;
-		CKeyboardController*	_keyController;
+		CEntity*				_pcPlayer;
+		CEntityController*		_pcPlayerController;
 	};
 }
 
